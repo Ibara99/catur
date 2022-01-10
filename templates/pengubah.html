@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ubah</title>
+</head>
+<body>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI -->
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+
+	<input type="text" name="ubah" id="ubah">
+<script>
+	$(function() {
+      $('#ubah').change(function() {
+      	console.log($(this).prop('value'))
+        sendAction("_setStatus", $(this).prop('value'));
+      });
+    });
+    function sendAction(type,value){
+    	var url = 'ws://localhost:5555';
+    	var socket = new WebSocket(url);
+    	var msg = JSON.stringify({"namasensor": type, "value":value, "date": "12-09-1999"});
+    	
+    	socket.onmessage = function (event) {
+            console.log(event.data);
+        };
+        socket.onerror = function (error) {
+            console.log('An error occurred while trying to connect to a Websocket!');
+            console.log(error);
+        };
+        socket.onopen = function (event) {
+            if (msg) {
+                socket.send(msg);
+            }
+        };
+	  // $.ajax({
+	  //     url: 'ws://localhost:5555',//#A
+	  //     dataType: 'json', //#B
+	  //     type: 'post', //#B
+	  //     contentType: 'application/json', //#B
+	  //     data: JSON.stringify({"namasensor": type, "value":value, "date": "12-09-1999"}), //#C
+	  //     processData: false,
+	  //     success: function( data, textStatus, jQxhr ){ //#D
+	  //         // $('#response pre').html( JSON.stringify( data ) );
+	  //         console.log(data);
+	  //     },
+	  //     error: function( jqXhr, textStatus, errorThrown ){//#E
+	  //         console.log( errorThrown );
+	  //     }
+	  // });
+	}
+</script>
+</body>
+</html>

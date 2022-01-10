@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My LineChart Project</title>
+  <!-- adminLTE css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/dist/css/adminlte.min.css') }}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- d3 js -->
+  <script src="{{ url_for('static', filename='/plugins/d3/d3.min.js' ) }}"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style type="text/css">
+    #title, #subtitle{
+      text-align: center;
+    }
+    svg{
+      background-color: #F4F4F5;
+    }
+    #svg-container-salinitas, #svg-container-ph{
+      margin: auto;
+      text-align: center;
+      max-width: 480px;
+    }
+    .tooltip 
+    { 
+        position: absolute;     
+        text-align: center;     
+        width: auto;          
+        height: auto;         
+        padding: 10px;        
+        font: 12px sans-serif;    
+        background: #FEFEFE;  
+        border: 1px navy solid;   
+        border-radius: 8px;     
+        pointer-events: none; 
+    }
+  </style>
+</head>
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <div class="container">
+      <a href="./Dashboard" class="navbar-brand">
+        <img src="{{ url_for('static', filename='/dist/img/AdminLTELogo.png" alt="AdminLTE Logo') }}" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">namaweb</span>
+      </a>
+
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="./Dashboard" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="./Data" class="nav-link">Data</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a id="dropdownSubMenu2" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Analisis Data</a>
+            <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
+              <li><a href="./deteksi-anomali" class="dropdown-item">Deteksi Anomali</a></li>
+              <li class="dropdown-submenu dropdown-hover">
+                <a id="dropdownSubMenu3" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Peramalan Data</a>
+                <ul aria-labelledby="dropdownSubMenu3" class="dropdown-menu border-0 shadow">
+                  <li>
+                    <a tabindex="-1" href="./backpro" class="dropdown-item">Backpropagation Neural Network</a>
+                  </li>
+                  <li><a href="./sma" class="dropdown-item">Simple Moving Average</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="./about" class="nav-link">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Dashboard</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1" id="recent-sal-icon"><i class="fas fa-shopping-cart"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Salinitas air sekarang</span>
+                <span class="info-box-number" id="recent-sal-value">33 ppt</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1" id="recent-ph-icon"><i class="fas fa-users"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">pH air sekarang</span>
+                <span class="info-box-number" id="recent-ph-value">8</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-info elevation-1" id="recent-ph-icon"><i class="fas fa-users"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">jumlah anomali sehari terakhir</span>
+                <span class="info-box-number" id="recent-ph-value">0</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row">    
+          <div  class="col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">Salinitas  </h3>
+                  <a href="./data-salinitas">View Report</a>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="svg-container-salinitas"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div  class="col-md-6 col-sm-12">
+            <div class="card">
+              <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">pH Air  </h3>
+                  <a href="./data-ph">View Report</a>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="svg-container-ph"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.0.5
+    </div>
+  </footer>
+</div>
+
+<!-- page's scripts -->
+<!-- jQuery -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE -->
+<script src="dist/js/adminlte.js"></script>
+
+<script type="text/javascript">
+  
+  var datajson = []
+  //init data awal;
+  const n = 100;
+  const now = new Date();
+  var i;
+  for (i = 0; i < n; i++) {
+    datajson.push({
+      "x": new Date(now.valueOf() + i*60*1000),
+      "y": parseInt(Math.random()*10)
+    });
+  }
+
+  // deklarasi awal;
+  const h = 200,
+        w = 300,
+        pad = 30;
+
+  const svg1 = d3.select("#svg-container-salinitas")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+  const svg2 = d3.select("#svg-container-ph")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+  
+  const tooltip1 = d3.select("#svg-container-salinitas")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+  const tooltip2 = d3.select("#svg-container-ph")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+  //deklarasi fungsi draw dan update data
+  function toTwoDigit(num) {
+    if (num<10) return "0"+num;
+    return num.toString();
+  }
+  function toDateString(d) {
+    // d adalah Date()
+    var year = (d.getYear()-100 +2000);
+    return ""+toTwoDigit(d.getDate())+"-"+toTwoDigit(d.getMonth()+1)+"-"+year+", "+
+              toTwoDigit(d.getHours())+":"+toTwoDigit(d.getMinutes())+":"+toTwoDigit(d.getSeconds());
+
+  }
+  function draw(){
+    // rescale svg1
+    scaleX1.domain(d3.extent(datajson, function(d) { return d["x"]; }))
+          .range([ pad, w-pad ]);
+    svg1.select("#axisX").call(d3.axisBottom(scaleX1));
+
+    scaleY1.domain([0, 10])
+          .range([ h-pad, pad ]);
+    svg1.select("#axisY").call(d3.axisLeft(scaleY1));
+
+    // rescale svg2
+    scaleX2.domain(d3.extent(datajson, function(d) { return d["x"]; }))
+          .range([ pad, w-pad ]);
+    svg2.select("#axisX").call(d3.axisBottom(scaleX2));
+
+    scaleY2.domain([0, 10])
+          .range([ h-pad, pad ]);
+    svg2.select("#axisY").call(d3.axisLeft(scaleY2));
+
+    // redraw svg1
+    nodes1
+      .attr("d", d3.line()
+        .x(function(d) { return scaleX1(d["x"]) })
+        .y(function(d) { return scaleY1(d["y"]) })
+        );
+    circles1
+      .attr("cx", (d, i) => scaleX1(d["x"]))
+      .attr("cy", (d, i) => scaleY1(d["y"]))
+      .attr("r", 1)
+      .attr("fill", (d) => {
+        if (d["y"]>6 || d["y"]<3) return "red"
+        return "steelblue"
+      })
+      .on("mouseover", (event, d)=>{
+        tooltip1.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip1.html("<b>Date: </b> "+toDateString(d['x'])+"<br><b>Value: </b>"+d["y"])
+                .style("left", (event.pageX)+"px")
+                .style("top", (event.pageY-200)+"px");
+      })
+      .on("mouseout", function(event, d) {
+        tooltip1
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+    // redraw svg2
+    nodes2
+      .attr("d", d3.line()
+        .x(function(d) { return scaleX2(d["x"]) })
+        .y(function(d) { return scaleY2(d["y"]) })
+        );
+    circles2
+      .attr("cx", (d, i) => scaleX2(d["x"]))
+      .attr("cy", (d, i) => scaleY2(d["y"]))
+      .attr("r", 1)
+      .attr("fill", (d) => {
+        if (d["y"]>6 || d["y"]<3) return "red"
+        return "steelblue"
+      })
+      .on("mouseover", (event, d)=>{
+        tooltip2.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip2.html("<b>Date: </b> "+toDateString(d['x'])+"<br><b>Value: </b>"+d["y"])
+                .style("left", event.pageX - 665+"px")
+                .style("top", event.pageY - 200+"px");
+        console.log(event.pageY);
+      })
+      .on("mouseout", function(event, d) {
+        tooltip2
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+  }
+
+  function updateData() {
+    datajson.push({
+      "x": new Date(now.valueOf() + i*60*1000),
+      "y": parseInt(Math.random()*10)
+    });
+    datajson.shift();
+    i = i + 1;
+    nodes1.datum(datajson);
+    circles1.data(datajson);
+    nodes2.datum(datajson);
+    circles2.data(datajson);
+    draw();
+  }
+
+  //deklarasi skala dan axis;
+  var scaleX1 = d3.scaleTime(), 
+      scaleY1 = d3.scaleLinear();
+
+  svg1.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg1.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+
+
+  var scaleX2 = d3.scaleTime(), 
+      scaleY2 = d3.scaleLinear();
+
+  svg2.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg2.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+
+  // deklarasi node dan garis;
+  var nodes1 = svg1.append("path")
+                .datum(datajson)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("class", "nodes");
+
+  var circles1 = svg1.selectAll("circle")
+                 .data(datajson)
+                 .enter()
+                 .append("circle")
+
+  var nodes2 = svg2.append("path")
+                .datum(datajson)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("class", "nodes");
+
+  var circles2 = svg2.selectAll("circle")
+                 .data(datajson)
+                 .enter()
+                 .append("circle")
+                 
+  draw();
+  window.setInterval(updateData, 60*1000); //1000 == 1 detik
+</script>
+
+</body>
+</html>

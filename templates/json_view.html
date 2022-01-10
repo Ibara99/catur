@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test API</title>
+</head>
+<body>
+	<div class="data-container"></div>
+	<div class="data-container"></div>
+	<div class="data-container"></div>
+	<div class="data-container"></div>
+	<div class="data-container"></div>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI -->
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function getAPI() {
+		$.getJSON('http://localhost:5000/api/getone', function (data) {
+          console.log(data);
+          document.getElementsByClassName("data-container")[0].innerText = data[0];
+        })
+        $.getJSON('http://localhost:5000/api/olah/4', function (data) {
+          console.log(data);
+          document.getElementsByClassName("data-container")[2].innerText = data[0];
+          document.getElementsByClassName("data-container")[3].innerText = data[1];
+          document.getElementsByClassName("data-container")[4].innerText = data[2];
+        })
+	})
+</script>
+</body>
+</html>

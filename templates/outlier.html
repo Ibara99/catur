@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Deteksi Outlier</title>
+	<!-- adminLTE css -->
+	<link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+	<!-- Google Font: Source Sans Pro -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+	<!-- DataTables -->
+	<link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+	<link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+	<!-- d3 js -->
+	<script src="../../plugins/d3/d3.min.js">
+
+	</script>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+
+<body class="hold-transition layout-top-nav">
+	<div class="wrapper">
+		<nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
+			<div class="container">
+				<a href="./Dashboard" class="navbar-brand">
+					<img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light"><b>IoT</b>ambak</span>
+      </a>
+
+      <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="./Dashboard" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="./Data" class="nav-link">Data</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a id="dropdownSubMenu2" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Analisis Data</a>
+            <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
+              <li><a href="./deteksi-anomali" class="dropdown-item">Deteksi Anomali</a></li>
+              <li class="dropdown-submenu dropdown-hover">
+                <a id="dropdownSubMenu3" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Peramalan Data</a>
+                <ul aria-labelledby="dropdownSubMenu3" class="dropdown-menu border-0 shadow">
+                  <li>
+                    <a tabindex="-1" href="./backpro" class="dropdown-item">Backpropagation Neural Network</a>
+                  </li>
+                  <li><a href="./sma" class="dropdown-item">Simple Moving Average</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="./about" class="nav-link">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Analisa Outlier</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <div class="content">
+      <div class="container-fluid">
+        
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Metode Elbow</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+          <div class="col-md-4 col-sm-12">
+            <div class="card card-outline card-primary">
+              <div class="card-header border-0">
+                <h3 class="card-title">Filter Data</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body">
+                <!-- <div class="row d-flex justify-content-center">
+                  <div class="col-sm-6">
+                    
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="date" id="tglCek">
+                    <button class="btn btn-info" id="cek">Cari</button>
+                  </div>
+                </div> -->
+                <div class="form-group">
+                  <label for="tglCek">Dari Tanggal</label>
+                  <div class="row">
+                    <div class="col-7">
+                      <input type="date" class="form-control" id="tglCek">
+                    </div>
+                    <div class="col-5">
+                      <input type="time" class="form-control" id="wktCek" value="00:00">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="tglCek">Sampai Tanggal</label>
+                  <div class="row">
+                    <div class="col-7">
+                      <input type="date" class="form-control" id="tglCek2">
+                    </div>
+                    <div class="col-5">
+                      <input type="time" class="form-control" id="wktCek2" value="00:00">
+                    </div>
+                  </div>
+                </div>
+                <button class="form-control btn btn-info" id="cek">Cari</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <div class="card card-outline card-secondary">
+              <div class="card-header border-0">
+                <h3 class="card-title">Cost Pada setiap Cluster</h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body" id="svg-container-elbow">
+                
+              </div>
+            </div>
+          </div> 
+          <div class="col-md-4 col-sm-12">
+            <div class="card card-outline card-secondary">
+              <div class="card-header border-0">
+                <h3 class="card-title">Plot Data</h3>
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body" id="svg-container-plot">
+                
+              </div>
+            </div>
+          </div> 
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Histori Anomali Air Tambak</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+          <div class="col-md-6 col-sm-12">
+            <div class="card card-outline card-warning">
+              <div class="card-header border-0">
+                <h3 class="card-title">Berdasarkan Ambang Batas</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                  <!-- <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="data.html" data-source-selector="#card-refresh-content" data-load-on-init="false"><i class="fas fa-sync-alt"></i></button> -->
+                </div>
+                <!-- /.card-tools -->
+                <div class="card-body">
+                  <table id="anomali1" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>waktu</th>
+                      <th>salinitas</th>
+                      <th>pH</th>
+                      <th>Status Anomali</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-12">
+            <div class="card card-outline card-warning">
+              <div class="card-header border-0">
+                <h3 class="card-title">Berdasarkan K-Means</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                  <!-- <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="data.html" data-source-selector="#card-refresh-content" data-load-on-init="false"><i class="fas fa-sync-alt"></i></button> -->
+                </div>
+                <!-- /.card-tools -->
+                <div class="card-body">
+                  <table id="anomali2" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>waktu</th>
+                      <th>salinitas</th>
+                      <th>pH</th>
+                      <th>Status Anomali</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Cek Anomali Tambak dengan Jumlah Cluster Berbeda</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+          <div class="col-md-4 col-sm-12">
+            <div class="card card-outline card-primary">
+              <div class="card-body">
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-6 col-sm-6">
+                      <label for="tglCek">Jumlah Cluster</label>
+                    </div>
+                    <div class="col-md-6">
+                      <input class="form-control" type="number" id="k" min=2 value="3">
+                    </div>
+                  </div>
+                </div>
+                <button class="form-control btn btn-info" id="cekOut">Hitung</button>
+              </div>
+            </div>
+            <div class="card card-outline card-secondary">
+              <div class="card-header border-0">
+                <h3 class="card-title">Detail Model</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body">
+                <dl>
+                  <dt>Nilai threshold</dt>
+                    <dd id="threshold">undefined</dd>
+                  <dt>Nilai silhouette coefficient</dt>
+                    <dd id="silhouette">undefined</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8 col-sm-12">
+            <div class="card card-outline card-secondary">
+              <div class="card-header border-0">
+                <h3 class="card-title">Detail Data</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body" id="svg-container-outlier">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Salinitas</th>
+                    <th>pH</th>
+                    <th>Jarak</th>
+                    <th>Status</th>
+                  </tr>
+                  </thead>
+                  <tbody id="out-data">
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.0.5
+    </div>
+  </footer>
+</div>
+
+<!-- page's scripts -->
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE -->
+<script src="../../dist/js/adminlte.js"></script>
+<!-- DataTables -->
+<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+
+<script type="text/javascript">
+  //define d3
+  var datajson = [];
+
+  // deklarasi awal;
+  const h = 300,
+        w = 500,
+        pad = 50;
+
+  const svg1 = d3.select("#svg-container-elbow")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+
+  // svg1.append("text").text("Cost K-Means").attr("transform", "translate("+(w/2-pad)+","+(pad-20)+")")
+  svg1.append("text").text("Jumlah Cluster (k)").attr("transform", "translate("+(w/2-pad)+","+(h-pad+35)+")")
+  svg1.append("text").text("Total Kuadrat Eror (SSE)").attr("transform", "translate("+(pad-30)+","+(h/2+pad)+")rotate(-90)")
+
+  const svg2 = d3.select("#svg-container-plot")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+
+  // svg2.append("text").text("Plot Data").attr("transform", "translate("+(w/2-pad)+","+(pad-20)+")")
+  svg2.append("text").text("ph Air").attr("transform", "translate("+(w/2-pad)+","+(h-pad+35)+")")
+  svg2.append("text").text("Salinitas").attr("transform", "translate("+(pad-30)+","+(h/2+pad)+")rotate(-90)")
+  
+  const tooltip1 = d3.select("#svg-container-elbow")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+  const tooltip2 = d3.select("#svg-container-plot")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+  //deklarasi skala dan axis;
+  var scaleX1 = d3.scaleLinear(), 
+      scaleY1 = d3.scaleLinear();
+
+  svg1.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg1.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+
+  var scaleX2 = d3.scaleLinear(), 
+      scaleY2 = d3.scaleLinear();
+
+  svg2.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg2.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+
+
+  function drawElbow(datajson){
+    d3.selectAll("svg").selectAll("circle").remove()
+    d3.selectAll("svg").selectAll("path").remove()
+
+    let costArray = datajson.cost,
+        dataset = [],
+        i = 2;
+    console.log(datajson.cost)
+    costArray.forEach((d)=>{
+      dataset.push({
+        "x": i,
+        "y": d
+      });
+      i++;
+    });
+    let dataArray = datajson.data,
+        dataset2 = [];
+    dataArray.forEach((d)=>{
+      dataset2.push({
+        "x": d.ph,
+        "y": d.sal
+      });
+    });
+    console.log(dataset2)
+
+    // deklarasi node dan garis;
+    var nodes1 = svg1.append("path")
+                  .datum(dataset)
+                  .attr("fill", "none")
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-width", 1.5)
+                  .attr("class", "nodes");
+    var circles1 = svg1.selectAll("circle")
+                  .data(dataset)
+                  .enter()
+                  .append("circle")
+    // deklarasi node dan garis;
+    // var nodes2 = svg2.append("path")
+    //               .datum(dataset2)
+    //               .attr("fill", "none")
+    //               .attr("stroke", "steelblue")
+    //               .attr("stroke-width", 1.5)
+    //               .attr("class", "nodes");
+    var circles2 = svg2.selectAll("circle")
+                  .data(dataset2)
+                  .enter()
+                  .append("circle")
+
+    // rescale svg1
+    scaleX1.domain([0, d3.max(dataset, (d,i) => d["x"])])
+    // scaleX1.domain([2, 10])
+          .range([ pad, w-pad ]);
+    axisX1 = d3.axisBottom(scaleX1)
+              .ticks(5);
+    svg1.select("#axisX").call(axisX1);
+
+    scaleY1.domain([0, d3.max(dataset, (d,i) => d["y"])])
+    // scaleY1.domain([2, 10])
+          .range([ h-pad, pad ]);
+    svg1.select("#axisY").call(d3.axisLeft(scaleY1));
+
+    // rescale svg2
+    scaleX2.domain([d3.min(dataset2, (d,i) => d["x"]), 
+                    d3.max(dataset2, (d,i) => d["x"])])
+    // scaleX1.domain([2, 10])
+          .range([ pad, w-pad ]);
+    axisX2 = d3.axisBottom(scaleX2)
+              .ticks(5);
+    svg2.select("#axisX").call(axisX2);
+
+    scaleY2.domain([d3.min(dataset2, (d,i) => d["y"]),
+                    d3.max(dataset2, (d,i) => d["y"])])
+    // scaleY1.domain([2, 10])
+          .range([ h-pad, pad ]);
+    axisY2 = d3.axisLeft(scaleY2)
+              .ticks(5);
+    svg2.select("#axisY").call(axisY2);
+
+    // redraw svg1
+    nodes1
+      .attr("d", d3.line()
+        .x(function(d) { return scaleX1(d["x"]) })
+        .y(function(d) { return scaleY1(d["y"]) })
+      )
+    circles1
+      .attr("cx", (d, i) => scaleX2(d["x"]))
+      .attr("cy", (d, i) => scaleY2(d["y"]))
+      .attr("r", 1)
+      .attr("fill", "steelblue")
+      .on("mouseover", (event, d)=>{
+        tooltip1.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip1.html("<b>pH: </b> "+d['x']+"<br><b>Salinitas: </b>"+d["y"])
+                .style("left", event.pageX - 665+"px")
+                .style("top", event.pageY - 200+"px");
+      })
+      .on("mouseout", function(event, d) {
+        tooltip1
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+
+    circles2
+      .attr("cx", (d, i) => scaleX2(d["x"]))
+      .attr("cy", (d, i) => scaleY2(d["y"]))
+      .attr("r", 1)
+      .attr("fill", "steelblue")
+      .on("mouseover", (event, d)=>{
+        tooltip2.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip2.html("<b>pH: </b> "+d['x']+"<br><b>Salinitas: </b>"+d["y"])
+                .style("left", event.pageX - 665+"px")
+                .style("top", event.pageY - 200+"px");
+      })
+      .on("mouseout", function(event, d) {
+        tooltip2
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+
+    circles2
+      .attr("cx", (d, i) => scaleX2(d["x"]))
+      .attr("cy", (d, i) => scaleY2(d["y"]))
+      .attr("r", 3)
+      .attr("fill", "steelblue")
+      .on("mouseover", (event, d)=>{
+        tooltip2.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip2.html("<b>pH: </b> "+d['x']+"<br><b>Salinitas: </b>"+d["y"])
+                .style("left", event.pageX - 665+"px")
+                .style("top", event.pageY - 200+"px");
+      })
+      .on("mouseout", function(event, d) {
+        tooltip2
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+  }
+
+  function toTwoDigit(num) {
+    if (num<10) return "0"+num;
+    return num.toString();
+  }
+  function toDateString(d) {
+    // d adalah Date()
+    d = new Date(d);
+    var year = (d.getYear()-100 +2000);
+    return ""+toTwoDigit(d.getDate())+"-"+toTwoDigit(d.getMonth()+1)+"-"+year+", "+
+              toTwoDigit(d.getHours())+":"+toTwoDigit(d.getMinutes())+":"+toTwoDigit(d.getSeconds());
+  }
+  function toGMTDateString(d) {
+    // d adalah Date()
+    var year = d.getUTCFullYear();
+    return ""+year+"-"+toTwoDigit(d.getUTCMonth()+1)+"-"+toTwoDigit(d.getUTCDate())+"T"+
+              toTwoDigit(d.getUTCHours())+":"+toTwoDigit(d.getUTCMinutes())+":"+toTwoDigit(d.getUTCSeconds())+".000Z";
+  }
+  function drawTable(datajson) {
+    $("#threshold")[0].innerHTML = datajson.threshold.toFixed(2);
+    $("#silhouette")[0].innerHTML = datajson.silhouette.toFixed(2);
+    
+    table.clear();
+    // table2.clear();
+    let tgl_, sali;
+    datajson.result.forEach((d)=>{
+      tgl_ = toDateString(d.timestamp);
+      table.row.add([tgl_, d.sal.toFixed(2), d.ph.toFixed(2), d.distance.toFixed(2), d.status]);
+    })
+    // $.each(datajson.centroid, (key, value)=>{
+    //   table2.row.add([parseInt(key)+1, value[0].toFixed(2), value[1].toFixed(2)]);
+    // })
+    table.draw();
+    // table2.draw();
+  }
+  let table = $('#example2').DataTable({
+    // "paging": false,
+    "lengthChange": true,
+    "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
+  });
+  let tableAnomali1 = $('#anomali1').DataTable({
+    // "paging": false,
+    "lengthChange": false,
+    // "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
+  }),
+  tableAnomali2 = $('#anomali2').DataTable({
+    // "paging": false,
+    "lengthChange": false,
+    // "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
+  });
+  function init_tabel(res) {
+    // $.getJSON("https://pengembangan-tugas-akhir-s1.ibaraasro.repl.co/api", function(res, status){
+      // secara basic ini untuk load table
+      datajson = res.data
+      tableAnomali1.clear();
+      tableAnomali2.clear();
+      let tgl_, sali, lbl;
+      datajson.forEach((d)=>{
+        tgl_ = toDateString(d.timestamp);
+        sali = d.sal;
+        if (d.ph < 6 || d.ph > 9 || sali < 14 || sali > 20)
+          lbl = "anomali"
+        else 
+          lbl = "normal"
+        
+        if (lbl == "anomali")
+          tableAnomali1.row.add([tgl_, sali.toFixed(2), d.ph, lbl]);
+        if (d.status == "outlier")
+          tableAnomali2.row.add([tgl_, sali.toFixed(2), d.ph, "anomali"]);
+      })
+      tableAnomali1.draw();
+      tableAnomali2.draw();
+    // })
+  }
+  // init_tabel()
+
+  //anu
+  to_ = new Date()
+  anu = to_.getFullYear()+"-"+toTwoDigit(to_.getMonth()+1)+"-"+toTwoDigit(to_.getDate());
+  $("#tglCek2")[0].value = anu
+  anu = toTwoDigit(to_.getHours())+":"+toTwoDigit(to_.getMinutes())
+  $("#wktCek2")[0].value = anu;
+  from_ = new Date(to_.getTime() - 3*60*60*1000)
+  anu = from_.getFullYear()+"-"+toTwoDigit(from_.getMonth()+1)+"-"+toTwoDigit(from_.getDate());
+  $("#tglCek")[0].value = anu
+  anu = toTwoDigit(from_.getHours())+":"+toTwoDigit(from_.getMinutes())
+  $("#wktCek")[0].value = anu
+  to_ = toGMTDateString(to_);
+  from_ = toGMTDateString(from_);
+  
+  
+
+  $("#cek").click(()=>{
+    f = $("#tglCek")[0].value +" "+ $("#wktCek")[0].value;
+    t = $("#tglCek2")[0].value +" "+ $("#wktCek2")[0].value;
+    
+    $(document).Toasts('create', {
+      icon: 'fas fa-sync fa-spin fa-lg',
+      title: 'Mengolah data menggunakan metode Elbow',
+      position: 'topLeft',
+      autohide: true,
+      delay: 4*60*1000,
+      body: 'Mengolah data dari tanggal '+f+' hingga '+t
+    })
+
+    f = toGMTDateString(new Date(f));
+    t = toGMTDateString(new Date(t));
+    $.ajax({
+      url: "https://pengembangan-tugas-akhir-s1.ibaraasro.repl.co/api/elbow",
+      // url: "http://localhost:5000/api/elbow",
+      method: "GET", 
+      data: {"from": f, "to":t},
+      success: function(d){
+        drawElbow(d);
+        init_tabel(d);
+        $(document).Toasts('create', {
+          icon: 'fas fa-check fa-lg',
+          class: 'bg-success',
+          title: 'Data berhasil dimuat',
+          position: 'topLeft',
+          autohide: true,
+          delay: 1000,
+        })
+      },
+      error: function(){
+        $(document).Toasts('create', {
+          icon: 'fas fa-times fa-lg',
+          class: 'bg-warning',
+          title: 'Data gagal dimuat',
+          position: 'topLeft',
+          autohide: true,
+          delay: 1000,
+        })
+      }
+    })
+  })
+  $("#cekOut").click(()=>{
+    f = $("#tglCek")[0].value +" "+ $("#wktCek")[0].value;
+    t = $("#tglCek2")[0].value +" "+ $("#wktCek2")[0].value;
+    
+    $(document).Toasts('create', {
+      icon: 'fas fa-sync fa-spin fa-lg',
+      title: 'Mengolah data menggunakan metode K-Means Clustering',
+      position: 'topLeft',
+      autohide: true,
+      delay: 5000,
+      body: 'Mengolah data dari tanggal '+f+' hingga '+t
+    })
+
+    f = toGMTDateString(new Date(f));
+    t = toGMTDateString(new Date(t));
+    let k = $("#k")[0].value;
+    $.ajax({
+      url: "https://pengembangan-tugas-akhir-s1.ibaraasro.repl.co/api/detekAnomali?to="+t+"&from="+f,
+      // url: "http://localhost:5000/api/deteksioutlier",
+      method: "GET", 
+      data: {"url":"http://localhost:5000/api/getone", "k": k},
+      success: function(d){
+        drawTable(d);
+        $(document).Toasts('create', {
+          icon: 'fas fa-check fa-lg',
+          class: 'bg-success',
+          title: 'Data berhasil dimuat',
+          position: 'topLeft',
+          autohide: true,
+          delay: 1000,
+        })
+      },
+      error: function(){
+        $(document).Toasts('create', {
+          icon: 'fas fa-times fa-lg',
+          class: 'bg-warning',
+          title: 'Data gagal dimuat',
+          position: 'topLeft',
+          autohide: true,
+          delay: 1000,
+        })
+      }
+    })
+  })
+
+</script>
+</body>
+</html>

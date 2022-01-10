@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>About Us</title>
+  <!-- adminLTE css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/dist/css/adminlte.min.css') }}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/plugins/fontawesome-free/css/all.min.css') }}">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <div class="container">
+      <a href="../Dashboard" class="navbar-brand">
+        <img src="{{ url_for('static', filename='/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light"><b>IoT</b>ambak</span>
+      </a>
+
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="../Dashboard" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="../Data" class="nav-link">Data</a>
+          </li>
+          <li>
+			<a href="../sma" class="nav-link">Peramalan</a>
+		  </li>
+          <li class="nav-item">
+            <a href="../about" class="nav-link">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">About Us</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- <div class="card card-solid">    
+          <div class="card-body"> -->
+            <div class="row d-flex align-items-stretch">
+              <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                <div class="card bg-light">
+                  <div class="card-header text-muted border-bottom-0">
+                    Mahasiswa
+                  </div>
+                  <div class="card-body pt-0">
+                    <div class="row">
+                      <div class="col-8">
+                        <h2 class="lead"><b>Ibnu Asro Putra</b></h2>
+                        <p class="text-muted text-sm"><b>Tentang: </b> Universitas Trunojoyo / Teknik Informatika / 160411100023 </p>
+                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Alamat: Bangkalan, Jawa Timur</li>
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> E-Mail: arsipibara@gmail.com</li>
+                        </ul>
+                      </div>
+                      <div class="col-4 text-center">
+                        <!-- <img src="../../dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid"> -->
+                        <img src="{{ url_for('static', filename='/dist/img/null.jpg" alt="" class="img-circle img-fluid') }}">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="text-right">
+                      <!-- <a href="#" class="btn btn-sm bg-teal">
+                        <i class="fas fa-comments"></i>
+                      </a> -->
+                      <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user"></i> View Profile
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                <div class="card bg-light">
+                  <div class="card-header text-muted border-bottom-0">
+                    Mahasiswa
+                  </div>
+                  <div class="card-body pt-0">
+                    <div class="row">
+                      <div class="col-8">
+                        <h2 class="lead"><b>M. Catur Budi Laksana</b></h2>
+                        <p class="text-muted text-sm"><b>Tentang: </b> Universitas Trunojoyo / Teknik Informatika / 160411100164 </p>
+                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Alamat: Bangkalan, Jawa Timur</li>
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> E-Mail: 160411100164@student.trunojoyo.ac.id</li>
+                        </ul>
+                      </div>
+                      <div class="col-4 text-center">
+                        <!-- <img src="../../dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid"> -->
+                        <img src="{{ url_for('static', filename='/dist/img/null.jpg" alt="" class="img-circle img-fluid') }}">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="text-right">
+                      <!-- <a href="#" class="btn btn-sm bg-teal">
+                        <i class="fas fa-comments"></i>
+                      </a> -->
+                      <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user"></i> View Profile
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                <div class="card bg-light">
+                  <div class="card-header text-muted border-bottom-0">
+                    Mahasiswa
+                  </div>
+                  <div class="card-body pt-0">
+                    <div class="row">
+                      <div class="col-8">
+                        <h2 class="lead"><b>Mohammad Faishol</b></h2>
+                        <p class="text-muted text-sm"><b>Tentang: </b> Universitas Trunojoyo / Teknik Informatika / 160411100142 </p>
+                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Alamat: Bangkalan, Jawa Timur</li>
+                          <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> E-Mail: 160411100142@student.trunojoyo.ac.id</li>
+                        </ul>
+                      </div>
+                      <div class="col-4 text-center">
+                        <!-- <img src="../../dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid"> -->
+                        <img src="{{ url_for('static', filename='/dist/img/null.jpg" alt="" class="img-circle img-fluid') }}">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                    <div class="text-right">
+                      <!-- <a href="#" class="btn btn-sm bg-teal">
+                        <i class="fas fa-comments"></i>
+                      </a> -->
+                      <a href="#" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user"></i> View Profile
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <!-- </div>
+        </div> -->
+      </div>
+    </div>
+    
+  </div>
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.0.5
+    </div>
+  </footer>
+</div>
+
+<!-- page's scripts -->
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+<!-- Bootstrap -->
+<script src="{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- AdminLTE -->
+<script src="{{ url_for('static', filename='dist/js/adminlte.js') }}"></script>
+
+<script type="text/javascript">
+</script>
+
+</body>
+</html>

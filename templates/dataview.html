@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data</title>
+  <!-- adminLTE css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/dist/css/adminlte.min.css') }}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/plugins/fontawesome-free/css/all.min.css') }}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <!-- d3 js -->
+  <script src="{{ url_for('static', filename='/plugins/d3/d3.min.js') }}"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style type="text/css">
+    #title, #subtitle{
+      text-align: center;
+    }
+    svg{
+      background-color: #F4F4F5;
+    }
+    #svg-container-salinitas, #svg-container-ph{
+      margin: auto;
+      text-align: center;
+      max-width: 480px;
+    }
+    .tooltip 
+    { 
+        position: absolute;     
+        text-align: center;     
+        width: auto;          
+        height: auto;         
+        padding: 10px;        
+        font: 12px sans-serif;    
+        background: #FEFEFE;  
+        border: 1px navy solid;   
+        border-radius: 8px;     
+        pointer-events: none; 
+    }
+    td, th{
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+  <nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
+    <div class="container">
+      <a href="../Dashboard" class="navbar-brand">
+        <img src="{{ url_for('static', filename='/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light"><b>IoT</b>ambak</span>
+      </a>
+
+      <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="../Dashboard" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="../data" class="nav-link">Data</a>
+          </li>
+          <li>
+			<a href="../sma" class="nav-link">Peramalan</a>
+		  </li>
+          <li class="nav-item">
+            <a href="../about" class="nav-link">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Data Tambak</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-4 col-sm-12">
+            <div class="card card-outline card-info">
+              <div class="card-header border-0">
+                <h3 class="card-title">Filter Data</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body">
+                <!-- <div class="row d-flex justify-content-center">
+                  <div class="col-sm-6">
+                    
+                  </div>
+                  <div class="col-sm-6">
+                    <input type="date" id="tglCek">
+                    <button class="btn btn-info" id="cek">Cari</button>
+                  </div>
+                </div> -->
+                <div class="form-group">
+                  <label for="tglCek">Dari Tanggal</label>
+                  <div class="row">
+                    <div class="col-7">
+                      <input type="date" class="form-control" id="tglCek">
+                    </div>
+                    <div class="col-5">
+                      <input type="time" class="form-control" id="wktCek" value="00:00">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="tglCek">Sampai Tanggal</label>
+                  <div class="row">
+                    <div class="col-7">
+                      <input type="date" class="form-control" id="tglCek2">
+                    </div>
+                    <div class="col-5">
+                      <input type="time" class="form-control" id="wktCek2" value="00:00">
+                    </div>
+                  </div>
+                </div>
+                <button class="form-control btn btn-info" id="cek">Cari</button>
+              </div>
+            </div>
+            <div class="card card-outline card-success">
+              <div class="card-header">
+                <h3 class="card-title">Statistik Data</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <dl>
+                  <dt>Rata-Rata pH</dt>
+                    <dd id="rph">undefined</dd>
+                  <dt>Nilai Tertinggi pH</dt>
+                    <dd id="maxph">undefined</dd>
+                  <dt>Nilai Terendah pH</dt>
+                    <dd id="minph">undefined</dd>
+                  <dt>Rata-Rata Salinitas</dt>
+                    <dd id="rsal">undefined</dd>
+                  <dt>Nilai Tertinggi Salinitas</dt>
+                    <dd id="maxsal">undefined</dd>
+                  <dt>Nilai Terendah Salinitas</dt>
+                    <dd id="minsal">undefined</dd>
+                </dl>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+          <div class="col-md-8 col-sm-12">
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <div class="card card-outline card-success">
+                  <div class="card-header border-0">
+                    <h3 class="card-title">Grafik Salinitas</h3>
+
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                      </button>
+                      <!-- <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="data.html" data-source-selector="#card-refresh-content" data-load-on-init="false"><i class="fas fa-sync-alt"></i></button> -->
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="svg-container-salinitas"></div>
+                    <!-- <svg width="300px" height="100px" class="tmp"></svg> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <div class="card card-outline card-success">
+                  <div class="card-header border-0">
+                    <h3 class="card-title">Grafik pH</h3>
+
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                      </button>
+                      <!-- <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="data.html" data-source-selector="#card-refresh-content" data-load-on-init="false"><i class="fas fa-sync-alt"></i></button> -->
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div id="svg-container-ph"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Rincian Data</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+            <div class="card card-outline card-info">
+              <div class="card-header border-0">
+                <h3 class="card-title">Kondisi Air Tambak</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                  <!-- <button type="button" class="btn btn-tool" data-card-widget="card-refresh" data-source="data.html" data-source-selector="#card-refresh-content" data-load-on-init="false"><i class="fas fa-sync-alt"></i></button> -->
+                </div>
+                <!-- /.card-tools -->
+                <div class="card-body">
+                  <table id="example2" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>waktu</th>
+                      <th>salinitas</th>
+                      <th>pH</th>
+                      <!-- <th>Status Anomali
+                        <br>(berdasarkan ambang batas)</th>
+                      <th>Status Anomali
+                        <br>(berdasarkan K-Means)</th> -->
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.0.5
+    </div>
+  </footer>
+</div>
+
+<!-- page's scripts -->
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='/plugins/jquery/jquery.min.js') }}"></script>
+<!-- Bootstrap -->
+<script src="{{ url_for('static', filename='/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- AdminLTE --> 
+<script src="{{ url_for('static', filename='/dist/js/adminlte.js') }}"></script>
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+<script type="text/javascript">
+  let a;
+  function toTwoDigit(num) {
+    if (num<10) return "0"+num;
+    return num.toString();
+  }
+  function toDateString(d) {
+    // d adalah Date()
+    d = new Date(d);
+    var year = (d.getYear()-100 +2000);
+    return ""+toTwoDigit(d.getDate())+"-"+toTwoDigit(d.getMonth()+1)+"-"+year+", "+
+              toTwoDigit(d.getHours())+":"+toTwoDigit(d.getMinutes())+":"+toTwoDigit(d.getSeconds());
+  }
+  function toGMTDateString(d) {
+    // d adalah Date()
+    var year = d.getUTCFullYear();
+    return ""+year+"-"+toTwoDigit(d.getUTCMonth()+1)+"-"+toTwoDigit(d.getUTCDate())+"T"+
+              toTwoDigit(d.getUTCHours())+":"+toTwoDigit(d.getUTCMinutes())+":"+toTwoDigit(d.getUTCSeconds())+".000Z";
+  }
+  let sum = function(array){
+    if (array.length == 1) return array[0]["y"]
+    return array[0]["y"] + sum(array.slice(1))
+  }
+  let mean = function(array){
+    return sum(array)/array.length
+  }
+  let getMinMax = function(array){
+    let min = Number.MAX_VALUE, 
+        max = Number.MIN_VALUE;
+    array.forEach((num)=>{
+      if (num["y"] < min) min = num["y"]
+      if (num["y"] > max) max = num["y"]
+    })
+    return {"min": min, "max":max}
+  }
+  function draw(datajson){
+    let tmp1, tmp2, m1, m2;
+    let datasal = [];
+    let dataph = [];
+    if (datajson.length > 0){
+      datajson.forEach((dataa)=>{
+        dataph.push({
+          "x": new Date(dataa.timestamp),
+          "y": dataa.ph
+        });
+      });
+      
+      datajson.forEach((dataa)=>{
+        datasal.push({
+          "x": new Date(dataa.timestamp),
+          //"y": 0.0125*parseInt(dataa.sal) + 13.50 
+          "y": dataa.sal
+        });
+      });
+      //untuk statistik
+      tmp1 = getMinMax(dataph)
+      tmp2 = getMinMax(datasal)    
+      m1 = mean(dataph)
+      m2 = mean(datasal)
+    }
+    else{
+      f = $("#tglCek")[0].value +" "+ $("#wktCek")[0].value;
+      t = $("#tglCek2")[0].value +" "+ $("#wktCek2")[0].value;
+      dataph.push({
+        "x": new Date(f),
+        "y": 5
+      }, {
+        "x": new Date(t),
+        "y": 5
+      })
+      datasal.push({
+        "x": new Date(f),
+        "y": 5
+      },{
+        "x": new Date(t),
+        "y": 5
+      })
+      tmp1 = {"min":undefined, "max":undefined}
+      tmp2 = tmp1
+    }
+    //append ke stat
+    $('#rph')[0].innerHTML = m1;
+    $('#rsal')[0].innerHTML = m2;
+    $('#minph')[0].innerHTML = tmp1.min;
+    $('#minsal')[0].innerHTML = tmp2.min;
+    $('#maxph')[0].innerHTML = tmp1.max;
+    $('#maxsal')[0].innerHTML = tmp2.max;
+    
+    // deklarasi node dan garis;
+    var nodes1 = svg1.append("path")
+                  .datum(datasal)
+                  .attr("fill", "none")
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-width", 1.5)
+                  .attr("class", "nodes");
+
+    var circles1 = svg1.selectAll("circle")
+                  .data(datasal)
+                  .enter()
+                  .append("circle")
+
+    var nodes2 = svg2.append("path")
+                  .datum(dataph)
+                  .attr("fill", "none")
+                  .attr("stroke", "steelblue")
+                  .attr("stroke-width", 1.5)
+                  .attr("class", "nodes");
+
+    var circles2 = svg2.selectAll("circle")
+                  .data(dataph)
+                  .enter()
+                  .append("circle")
+
+    // rescale svg1
+    scaleX1.domain(d3.extent(dataph, function(d) { return d["x"]; }))
+          .range([ pad, w-pad ]);
+    axisX1 = d3.axisBottom(scaleX1)
+              .ticks(5);
+    svg1.select("#axisX").call(axisX1);
+
+    scaleY1.domain([5, 20])
+          .range([ h-pad, pad ]);
+    svg1.select("#axisY").call(d3.axisLeft(scaleY1));
+
+    // rescale svg2
+    scaleX2.domain(d3.extent(datasal, function(d) { return d["x"]; }))
+          .range([ pad, w-pad ]);
+    axisX2 = d3.axisBottom(scaleX2)
+              .ticks(5);
+    svg2.select("#axisX").call(axisX2);
+
+    scaleY2.domain([5, 10])
+          .range([ h-pad, pad ]);
+    svg2.select("#axisY").call(d3.axisLeft(scaleY2));
+
+    // redraw svg1
+    nodes1
+      .attr("d", d3.line()
+        .x(function(d) { return scaleX1(d["x"]) })
+        .y(function(d) { return scaleY1(d["y"]) })
+        );
+    circles1
+      .attr("cx", (d, i) => scaleX1(d["x"]))
+      .attr("cy", (d, i) => scaleY1(d["y"]))
+      .attr("r", 1)
+      .attr("fill", (d) => {
+        if (d["y"]>6 || d["y"]<3) return "red"
+        return "steelblue"
+      })
+      .on("mouseover", (event, d)=>{
+        tooltip1.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip1.html("<b>Date: </b> "+toDateString(d['x'])+"<br><b>Value: </b>"+d["y"])
+                .style("left", (event.pageX)+"px")
+                .style("top", (event.pageY-200)+"px");
+      })
+      .on("mouseout", function(event, d) {
+        tooltip1
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+    // redraw svg2
+    nodes2
+      .attr("d", d3.line()
+        .x(function(d) { return scaleX2(d["x"]) })
+        .y(function(d) { return scaleY2(d["y"]) })
+        );
+    circles2
+      .attr("cx", (d, i) => scaleX2(d["x"]))
+      .attr("cy", (d, i) => scaleY2(d["y"]))
+      .attr("r", 1)
+      .attr("fill", (d) => {
+        if (d["y"]>6 || d["y"]<3) return "red"
+        return "steelblue"
+      })
+      .on("mouseover", (event, d)=>{
+        tooltip2.transition()
+                .duration(200)
+                .style("opacity", 0.75);
+        tooltip2.html("<b>Date: </b> "+toDateString(d['x'])+"<br><b>Value: </b>"+d["y"])
+                .style("left", event.pageX - 665+"px")
+                .style("top", event.pageY - 200+"px");
+        console.log(event.pageY);
+      })
+      .on("mouseout", function(event, d) {
+        tooltip2
+          .transition()
+          .duration(400)
+          .style("opacity", 0);
+      });
+  }
+  
+  var datajson = [];
+
+  // deklarasi awal;
+  const h = 300,
+        w = 500,
+        pad = 50;
+
+  const svg1 = d3.select("#svg-container-salinitas")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+  svg1.selectAll("*").remove();
+
+  svg1.append("text").text("Salinitas Air Tambak").attr("transform", "translate("+(w/2-pad*1.5)+","+(pad-20)+")")
+  svg1.append("text").text("Waktu (jam)").attr("transform", "translate("+(w/2-pad)+","+(h-pad+35)+")")
+  svg1.append("text").text("Salinitas (ppt)").attr("transform", "translate("+(pad-30)+","+(h/2+pad)+")rotate(-90)")
+
+  const svg2 = d3.select("#svg-container-ph")
+              .append("svg")
+              .attr("viewBox", "0 0 "+w+" "+h);
+
+  svg2.append("text").text("pH Air Tambak").attr("transform", "translate("+(w/2-pad)+","+(pad-20)+")")
+  svg2.append("text").text("Waktu (jam)").attr("transform", "translate("+(w/2-pad)+","+(h-pad+35)+")")
+  svg2.append("text").text("pH Air").attr("transform", "translate("+(pad-30)+","+(h/2+30)+")rotate(-90)")
+  
+  const tooltip1 = d3.select("#svg-container-salinitas")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+  const tooltip2 = d3.select("#svg-container-ph")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+  //deklarasi skala dan axis;
+  var scaleX1 = d3.scaleTime(), 
+      scaleY1 = d3.scaleLinear();
+
+  svg1.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg1.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+
+
+  var scaleX2 = d3.scaleTime(), 
+      scaleY2 = d3.scaleLinear();
+
+  svg2.append("g")
+    .attr("transform", "translate(0, "+(h-pad)+")")
+    .attr("id", "axisX")
+  
+  svg2.append("g")
+    .attr("transform", "translate("+pad+", 0)")
+    .attr("id", "axisY")
+  
+  // main js ada di sini
+  // declare table menjadi datatable
+  let table = $('#example2').DataTable({
+    // "paging": false,
+    "lengthChange": false,
+    // "searching": false,
+    "ordering": true,
+    "info": true,
+    "autoWidth": false,
+    "responsive": true,
+  });
+  
+  function drawTable(datajson) {
+    table.clear();
+    let tgl_, sali, lbl;
+    datajson.forEach((d)=>{
+      tgl_ = toDateString(d.timestamp);
+      // sali = 0.0125*parseInt(d.sal) + 13.50;
+      sali = d.sal;
+      table.row.add([tgl_, sali.toFixed(2), d.ph]);
+    })
+    table.draw();
+  }
+  //anu
+  to_ = new Date()
+  anu = to_.getFullYear()+"-"+toTwoDigit(to_.getMonth()+1)+"-"+toTwoDigit(to_.getDate());
+  $("#tglCek2")[0].value = anu
+  anu = toTwoDigit(to_.getHours())+":"+toTwoDigit(to_.getMinutes())
+  $("#wktCek2")[0].value = anu;
+  from_ = new Date(to_.getTime() - 3*60*60*1000)
+  anu = from_.getFullYear()+"-"+toTwoDigit(from_.getMonth()+1)+"-"+toTwoDigit(from_.getDate());
+  $("#tglCek")[0].value = anu
+  anu = toTwoDigit(from_.getHours())+":"+toTwoDigit(from_.getMinutes())
+  $("#wktCek")[0].value = anu
+  to_ = toGMTDateString(to_);
+  from_ = toGMTDateString(from_);
+  // document ready
+  $(function () {
+
+    // json awal
+    $.getJSON("https://pengembangan-tugas-akhir-s1.ibaraasro.repl.co/api?from="+from_+"&to="+to_, function(res, status){
+      // secara basic ini untuk load table
+      drawTable(res.data);
+
+      //abis itu baru gambar grafik
+      draw(res.data);
+    })
+    // ini untuk pindah hari
+    $("#cek").click(function(){
+      f = $("#tglCek")[0].value +" "+ $("#wktCek")[0].value;
+      t = $("#tglCek2")[0].value +" "+ $("#wktCek2")[0].value;
+      
+      $(document).Toasts('create', {
+        icon: 'fas fa-sync fa-spin fa-lg',
+        title: 'Memuat Data',
+        position: 'topLeft',
+        autohide: true,
+        delay: 2000,
+        body: 'Memuat data dari tanggal '+f+' hingga '+t
+      })
+
+      f = toGMTDateString(new Date(f));
+      t = toGMTDateString(new Date(t));
+      $.ajax({
+        url: "https://Pengembangan-Tugas-Akhir-S1.ibaraasro.repl.co/api?from="+f+"&to="+t,
+        success: function(res){
+          d3.selectAll("svg").selectAll("circle").remove()
+          d3.selectAll("svg").selectAll("path").remove()
+          console.log("cek")
+          drawTable(res.data);
+          draw(res.data);
+
+          $(document).Toasts('create', {
+            icon: 'fas fa-check fa-lg',
+            class: 'bg-success',
+            title: 'Data berhasil dimuat',
+            position: 'topLeft',
+            autohide: true,
+            delay: 1000,
+          })
+        },
+        error: function(){
+          $(document).Toasts('create', {
+            icon: 'fas fa-times fa-lg',
+            class: 'bg-warning',
+            title: 'Data gagal dimuat',
+            position: 'topLeft',
+            autohide: true,
+            delay: 1000,
+          })
+        }
+      })
+    })
+  })
+</script>
+
+</body>
+</html>
